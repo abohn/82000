@@ -29,7 +29,7 @@ int main() {
 
   std::cout << "Finding smallest number represented by only 0s and 1s from\n"
             << "base " << kMinBase << " to " << kMaxBase << ", larger than "
-            << "10^" << kStartNumLog10 << "\n";
+            << "10^" << kStartNumLog10 << std::endl;
 
   const double kStart = GetTimeInSeconds();
 
@@ -77,7 +77,7 @@ int main() {
       {
         std::cout << guess.SizeInBase(10) << " " << guess.SizeInBase(2) << " "
                   << (GetTimeInSeconds() - kStart) << " "
-                  << numsCheckedThisRange << "\n";
+                  << numsCheckedThisRange << std::endl;
       }
       numsCheckedThisRange = 0;
 
