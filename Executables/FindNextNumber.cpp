@@ -28,8 +28,8 @@ int main() {
                 "Start of search is larger than solution for max base");
 
   std::cout << "Finding smallest number represented by only 0s and 1s from\n"
-    << "base " << kMinBase << " to " << kMaxBase << ", larger than "
-    << "10^" << kStartNumLog10 << "\n";
+            << "base " << kMinBase << " to " << kMaxBase << ", larger than "
+            << "10^" << kStartNumLog10 << "\n";
 
   const double kStart = GetTimeInSeconds();
 
@@ -42,7 +42,8 @@ int main() {
   // currentNumBits + kNumBitsToCheck, before grabbing the next available
   // range of numbers
   uint64_t currentNumBits = guess.SizeInBase(2);
-  // check this many bits, which has log(2)/log(10) times as many digits in base 10
+  // check this many bits, which has log(2)/log(10) times as many digits in base
+  // 10
   // We may want to explore making this proportional to the size of the current
   // guess, since the guesses should jump proportionally
   const uint64_t kNumBitsToCheck = 1e3;
@@ -50,8 +51,9 @@ int main() {
   uint numsCheckedThisRange = 0;
 
 #ifdef _OPENMP
-#pragma omp parallel default(none) private(guess, numsCheckedThisRange) \
-    shared(std::cout, currentNumBits, foundAnswer, answer)
+#pragma omp parallel default(none) private( \
+    guess, numsCheckedThisRange)            \
+        shared(std::cout, currentNumBits, foundAnswer, answer)
 #endif
   {
     uint64_t upperBoundNumBitsToCheck;
@@ -68,7 +70,7 @@ int main() {
         upperBoundNumBitsToCheck = currentNumBits;
       }
 
-      //Print out progress
+// Print out progress
 #ifdef _OPENMP
 #pragma omp master
 #endif
@@ -104,8 +106,7 @@ int main() {
               if (guess < answer) {
                 answer = guess;
               }
-            }
-            else {
+            } else {
               std::cout << "Found an answer\n";
               foundAnswer = true;
               answer = guess;
@@ -114,7 +115,7 @@ int main() {
         }
       }
     }
-  } // end omp parallel section
+  }  // end omp parallel section
 
   std::cout << "Answer written to answer.txt\n";
   answer.PrintToFile("answer.txt");
@@ -149,8 +150,7 @@ bool TestNumber(BigInt& num, const size_t kBase, BigInt& check, BigInt& temp) {
         break;
       }
       consecutiveOnesSinceZero++;
-    }
-    else {
+    } else {
       consecutiveOnesSinceZero = 0;
     }
     if (check > 1) {
@@ -172,8 +172,7 @@ bool TestNumber(BigInt& num, const size_t kBase, BigInt& check, BigInt& temp) {
     // In general, we have:
     num -= temp;
     num -= check;
-    for (size_t i = consecutiveOnesSinceZero - 1;
-         i < consecutiveOnesSinceZero;
+    for (size_t i = consecutiveOnesSinceZero - 1; i < consecutiveOnesSinceZero;
          --i) {
       check *= kBase;
       num -= check;
