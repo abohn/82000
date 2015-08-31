@@ -24,10 +24,11 @@ bool TestNumber(BigInt& num, const size_t kBase) {
   BigInt check(kBase, num.SizeInBase(kBase));
   BigInt temp(num);
 
-  // holds if the last successful digit was 0 or 1 in base kBase
-  bool lastDigitWasOne = false;
+  // Stores the number of ones in a row since a 0, in the order that digits are
+  // checked in this function. Useful upon failure for guessing the next number
+  size_t consecutiveOnesSinceZero = 0;
   bool valid = true;
-  while (check > 1) {
+  while (check >= 1) {
     if (temp >= check) {
       // check is currently at the largest digit. Subtract the check and make
       // sure the largest digit is 1
@@ -37,35 +38,33 @@ bool TestNumber(BigInt& num, const size_t kBase) {
         valid = false;
         break;
       }
-      lastDigitWasOne = true;
+      consecutiveOnesSinceZero++;
     }
     else {
-      lastDigitWasOne = false;
+      consecutiveOnesSinceZero = 0;
     }
-    // check goes from kBase^n to kBase^(n-1), removing a zero in base kBase
-    check /= kBase;
+    if (check > 1) {
+      // check goes from kBase^n to kBase^(n-1), removing a zero in base kBase
+      check /= kBase;
+    } else {
+      check = 0;
+    }
   }
 
   if (!valid) {
     // We need to generate the next largest number above num which is
     // represented by 0s and 1s
-    // There are two possibilities, where the last good digit was 0 or 1
-    // num  = 1000200300
-    // lastdigitOne = false
-    // temp =     100300
-    // check=     100000
-    // next = 1001000000
-    //
-    // or
-    // num  = 1001200300
-    // temp =     100300
-    // check=     100000
-    // lastdigitOne = true
-    // next = 1010000000
+    // num  = 10111200300
+    // temp =      100300
+    // check=      100000
+    // consecutiveOnesSinceZero = 3
+    // next = 11000000000
     // In general, we have:
     num -= temp;
     num -= check;
-    if (lastDigitWasOne) {
+    for (size_t i = consecutiveOnesSinceZero - 1;
+         i < consecutiveOnesSinceZero;
+         --i) {
       check *= kBase;
       num -= check;
     }
@@ -98,6 +97,7 @@ int main() {
 
   while (!foundAnswer) {
     bool guessIsCorrect = true;
+    guess.PrintToFile("guess.txt");
 
     // Bail out of the loop as soon as one base fails the test.
     // Start with the maximum base, so statistically our next guess will be
