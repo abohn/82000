@@ -16,6 +16,16 @@ else()
   message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
+#Add OpenMP if it's available
+FIND_PACKAGE(OpenMP)
+if(OPENMP_FOUND)
+  message("OpenMP found")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+else()
+  message("OpenMP not found.  Serial version will be compiled")
+endif()
+
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 #set the directory for includes
