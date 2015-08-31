@@ -81,6 +81,9 @@ int main() {
       }
       numsCheckedThisRange = 0;
 
+      // TestNumber's next guess satisfies the last base it checked.
+      // We save a lot by skipping the check in that base
+      size_t skipBase = 0;
       while (!foundAnswer && guess.SizeInBase(2) < upperBoundNumBitsToCheck) {
         bool guessIsCorrect = true;
         numsCheckedThisRange++;
@@ -90,7 +93,13 @@ int main() {
         // the farthest away
         for (size_t iBase = kMaxBase; iBase >= kMinBase && guessIsCorrect;
              iBase--) {
-          guessIsCorrect = TestNumber(guess, iBase, temp1, temp2);
+          if (iBase != skipBase) {
+            guessIsCorrect = TestNumber(guess, iBase, temp1, temp2);
+          }
+
+          if (!guessIsCorrect) {
+            skipBase = iBase;
+          }
         }
 
         if (guessIsCorrect) {
@@ -119,6 +128,7 @@ int main() {
 
   std::cout << "Answer written to answer.txt\n";
   answer.PrintToFile("answer.txt");
+
   return 0;
 }
 
@@ -139,6 +149,7 @@ bool TestNumber(BigInt& num, const size_t kBase, BigInt& check, BigInt& temp) {
   // checked in this function. Useful upon failure for guessing the next number
   size_t consecutiveOnesSinceZero = 0;
   bool valid = true;
+
   while (check >= 1) {
     if (temp >= check) {
       // check is currently at the largest digit. Subtract the check and make
