@@ -4,12 +4,7 @@
 
 #include "Tools/BigInt.hpp"
 
-/// Tests if the passed number has only 0s and 1s in the specified base
-/// representation.
-/// The number will be modified to be equal to the next largest number which
-/// satisfies the test in this base
-bool TestNumber(BigInt& num, const size_t kBase);
-/// Uses correct time function when OpenMP is being used
+bool TestNumber(BigInt& num, const size_t kBase, BigInt& check, BigInt& temp);
 double GetTimeInSeconds();
 
 // Find the smallest number whose representation in all bases below a specified
@@ -60,6 +55,8 @@ int main() {
 #endif
   {
     uint64_t upperBoundNumBitsToCheck;
+    // temporary variables used in TestNumber to minimize memory allocations
+    BigInt temp1, temp2;
 
     while (!foundAnswer) {
 #ifdef _OPENMP
@@ -91,7 +88,7 @@ int main() {
         // the farthest away
         for (size_t iBase = kMaxBase; iBase >= kMinBase && guessIsCorrect;
              iBase--) {
-          guessIsCorrect = TestNumber(guess, iBase);
+          guessIsCorrect = TestNumber(guess, iBase, temp1, temp2);
         }
 
         if (guessIsCorrect) {
@@ -124,12 +121,18 @@ int main() {
   return 0;
 }
 
-bool TestNumber(BigInt& num, const size_t kBase) {
+/// Tests if the passed number has only 0s and 1s in the specified base
+/// representation.
+/// The number will be modified to be equal to the next largest number which
+/// satisfies the test in this base
+/// The check variable and temp variable are temporaries passed in to minimize
+/// memory allocations
+bool TestNumber(BigInt& num, const size_t kBase, BigInt& check, BigInt& temp) {
   // Test num starting from the largest digit in kBase
   // The check variable stores kBase^n, or 1 followed by 0s in base kBase, and
   // corresponds to the digit in num we're currently testing
-  BigInt check(kBase, num.SizeInBase(kBase));
-  BigInt temp(num);
+  check.Set(kBase, num.SizeInBase(kBase));
+  temp.Set(num);
 
   // Stores the number of ones in a row since a 0, in the order that digits are
   // checked in this function. Useful upon failure for guessing the next number
@@ -182,6 +185,7 @@ bool TestNumber(BigInt& num, const size_t kBase) {
   return valid;
 }
 
+/// Uses correct time function when OpenMP is being used
 double GetTimeInSeconds() {
   double time;
 #ifdef _OPENMP
