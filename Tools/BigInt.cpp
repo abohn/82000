@@ -4,10 +4,10 @@
 
 BigInt::BigInt() { mpz_init(mNum); }
 
-BigInt::BigInt(const unsigned long kNum) : BigInt() { mpz_set_ui(mNum, kNum); }
+BigInt::BigInt(const unsigned long kNum) : BigInt() { Set(kNum); }
 
 BigInt::BigInt(const unsigned long kBase, const unsigned long kExp) : BigInt() {
-  mpz_ui_pow_ui(mNum, kBase, kExp);
+  Set(kBase, kExp);
 }
 
 BigInt::~BigInt() { mpz_clear(mNum); }
@@ -30,6 +30,14 @@ BigInt& BigInt::operator=(const BigInt& kRhs) {
 }
 
 void BigInt::swap(BigInt& other) { mpz_swap(mNum, other.mNum); }
+
+void BigInt::Set(const unsigned long kValue) { mpz_set_ui(mNum, kValue); }
+
+void BigInt::Set(const BigInt& kValue) { mpz_set(mNum, kValue.mNum); }
+
+void BigInt::Set(const unsigned long kBase, const unsigned long kExponent) {
+  mpz_ui_pow_ui(mNum, kBase, kExponent);
+}
 
 BigInt& BigInt::operator+=(const BigInt& kRhs) {
   mpz_add(mNum, mNum, kRhs.mNum);

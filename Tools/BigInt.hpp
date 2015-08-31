@@ -38,6 +38,11 @@ class BigInt {
   bool operator>(const unsigned long kInt) const { return !(*this <= kInt); }
   bool operator>=(const unsigned long kInt) const { return !(*this < kInt); }
 
+  // set value operations
+  void Set(const unsigned long kValue);
+  void Set(const BigInt& kValue);
+  void Set(const unsigned long kBase, const unsigned long kExponent);
+
   // math
   BigInt& operator+=(const BigInt& kRhs);
   BigInt& operator-=(const BigInt& kRhs);
