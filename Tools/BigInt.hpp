@@ -6,8 +6,11 @@
 /// Wrapper around gmp's c-style integer class
 class BigInt {
  public:
+  /// Constructs an integer equal to 0
   BigInt();
+  /// Constructs an integer equal to the passed number
   BigInt(const unsigned long kNum);
+  /// Constructs an integer equal to base^exp
   BigInt(const unsigned long kBase, const unsigned long kExp);
   ~BigInt();
 
