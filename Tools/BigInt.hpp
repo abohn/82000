@@ -18,6 +18,7 @@ class BigInt {
   BigInt(BigInt&& other);
 
   BigInt& operator=(const BigInt& kRhs);
+  BigInt& operator=(BigInt&& other);
 
   void swap(BigInt& other);
 

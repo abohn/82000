@@ -29,6 +29,12 @@ BigInt& BigInt::operator=(const BigInt& kRhs) {
   return *this;
 }
 
+BigInt& BigInt::operator=(BigInt&& other) {
+  this->swap(other);
+  other.Set(0);
+  return *this;
+}
+
 void BigInt::swap(BigInt& other) { mpz_swap(mNum, other.mNum); }
 
 void BigInt::Set(const unsigned long kValue) { mpz_set_ui(mNum, kValue); }
