@@ -18,9 +18,9 @@ double GetTimeInSeconds();
 // base <= 5: 82000. Note that 5 doesn't work, since 5b10 = 12b3
 int main() {
   // Some configurables
-  const size_t kMinBase = 3;
-  const size_t kMaxBase = 6;
-  const uint64_t kStartNumLog10 = 1;
+  const auto kMinBase = uint8_t{3};
+  const auto kMaxBase = uint8_t{6};
+  const auto kStartNumLog10 = uint64_t{8400000};
 
   static_assert(kStartNumLog10 >= 1, "Must start search at 10^1 or above");
   static_assert(kMinBase <= kMaxBase, "Min base must be <= max base");
@@ -31,24 +31,23 @@ int main() {
             << "base " << kMinBase << " to " << kMaxBase << ", larger than "
             << "10^" << kStartNumLog10 << std::endl;
 
-  const double kStart = GetTimeInSeconds();
+  const auto kStart = GetTimeInSeconds();
 
-  BigInt answer;
-  BigInt guess(10);
+  auto answer = BigInt{};
+  auto guess = BigInt{10};
   guess.RaiseToPower(kStartNumLog10);
 
-  bool foundAnswer = false;
+  auto foundAnswer = false;
   // Each thread will check a range of numbers from currentNumBits to
   // currentNumBits + kNumBitsToCheck, before grabbing the next available
   // range of numbers
-  uint64_t currentNumBits = guess.SizeInBase(2);
+  auto currentNumBits = guess.SizeInBase(2);
   // check this many bits, which has log(2)/log(10) times as many digits in base
   // 10
   // We may want to explore making this proportional to the size of the current
   // guess, since the guesses should jump proportionally
-  const uint64_t kNumBitsToCheck = 1e3;
-
-  uint numsCheckedThisRange = 0;
+  const auto kNumBitsToCheck = 1e3;
+  auto numsCheckedThisRange = uint32_t{0};
 
 #ifdef _OPENMP
 #pragma omp parallel default(none) private( \
@@ -56,9 +55,9 @@ int main() {
         shared(std::cout, currentNumBits, foundAnswer, answer)
 #endif
   {
-    uint64_t upperBoundNumBitsToCheck;
+    auto upperBoundNumBitsToCheck = uint64_t{0};
     // temporary variables used in TestNumber to minimize memory allocations
-    BigInt temp1, temp2;
+    auto temp1 = BigInt{}, temp2 = BigInt{};
 
     while (!foundAnswer) {
 #ifdef _OPENMP
@@ -83,15 +82,15 @@ int main() {
 
       // TestNumber's next guess satisfies the last base it checked.
       // We save a lot by skipping the check in that base
-      size_t skipBase = 0;
+      auto skipBase = decltype(kMinBase){0};
       while (!foundAnswer && guess.SizeInBase(2) < upperBoundNumBitsToCheck) {
-        bool guessIsCorrect = true;
+        auto guessIsCorrect = true;
         numsCheckedThisRange++;
 
         // Bail out of the loop as soon as one base fails the test.
         // Start with the maximum base, so statistically our next guess will be
         // the farthest away
-        for (size_t iBase = kMaxBase; iBase >= kMinBase && guessIsCorrect;
+        for (auto iBase = kMaxBase; iBase >= kMinBase && guessIsCorrect;
              iBase--) {
           if (iBase != skipBase) {
             guessIsCorrect = TestNumber(guess, iBase, temp1, temp2);
@@ -147,8 +146,8 @@ bool TestNumber(BigInt& num, const size_t kBase, BigInt& check, BigInt& temp) {
 
   // Stores the number of ones in a row since a 0, in the order that digits are
   // checked in this function. Useful upon failure for guessing the next number
-  size_t consecutiveOnesSinceZero = 0;
-  bool valid = true;
+  auto consecutiveOnesSinceZero = uint64_t{0};
+  auto valid = true;
 
   while (check >= 1) {
     if (temp >= check) {
@@ -197,11 +196,11 @@ bool TestNumber(BigInt& num, const size_t kBase, BigInt& check, BigInt& temp) {
 
 /// Uses correct time function when OpenMP is being used
 double GetTimeInSeconds() {
-  double time;
+  auto time = 0.;
 #ifdef _OPENMP
   time = omp_get_wtime();
 #else
-  struct timeval tv;
+  auto tv = timeval{};
   gettimeofday(&tv, nullptr);
   time = tv.tv_sec + tv.tv_usec / (1.e6);
 #endif
