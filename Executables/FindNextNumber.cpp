@@ -172,6 +172,8 @@ bool TestNumber(BigInt& num, const size_t kBase, BigInt& check, BigInt& temp) {
   }
 
   if (!valid) {
+    // Skipping logic similar to reddit's u/grencez, but takes into account
+    // consecutive ones before the failed digit properly
     // We need to generate the next largest number above num which is
     // represented by 0s and 1s
     // num  = 10111200300
