@@ -1,5 +1,6 @@
 set(Tools_SOURCES
   BigInt.cpp
+  TestHelper.cpp
   TestNumber.cpp
 )
 
