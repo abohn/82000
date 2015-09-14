@@ -23,7 +23,9 @@ class BigInt {
   void swap(BigInt& other);
 
   // comparisons
-  bool operator==(const BigInt& kOther) const { return mNum == kOther.mNum; }
+  bool operator==(const BigInt& kOther) const {
+    return mpz_cmp(mNum, kOther.mNum) == 0;
+  }
   bool operator!=(const BigInt& kOther) const { return !(*this == kOther); }
   bool operator<(const BigInt& kOther) const {
     return mpz_cmp(mNum, kOther.mNum) < 0;
