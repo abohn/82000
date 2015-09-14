@@ -5,3 +5,5 @@ set(Tools_SOURCES
 )
 
 add_library(Tools ${Tools_SOURCES})
+
+add_subdirectory(Tests)
