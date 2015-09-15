@@ -1,1 +1,2 @@
+add_subdirectory(Test_BigInt)
 add_subdirectory(Test_TestNumber)
