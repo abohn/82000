@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cmath>
 #include <iostream>
 #include <omp.h>
@@ -20,29 +21,45 @@ int main() {
   // Some configurables
   const auto kMinBase = uint8_t{3};
   const auto kMaxBase = uint8_t{6};
-  const auto kStartNumLog10 = uint64_t{8400000};
-
-  static_assert(kStartNumLog10 >= 1, "Must start search at 10^1 or above");
   static_assert(kMinBase <= kMaxBase, "Min base must be <= max base");
-  static_assert((kMaxBase == 5 && kStartNumLog10 <= 4) || kMaxBase >= 6,
+  // Specify the start number in only one of the following ways, passing 0
+  // otherwise
+  const auto kStartNum = uint64_t{82001};
+  const auto kStartNumLog10 = uint64_t{0};
+  static_assert(kStartNum == 0 || kStartNumLog10 == 0,
+                "Starting number can only be specified in one way");
+
+  auto guess = BigInt{10};
+  if (kStartNum == 0) {
+    assert(kStartNumLog10 >= 1 && "Must start search at 10^1 or above");
+    guess.RaiseToPower(kStartNumLog10);
+  }
+  else {
+    guess = kStartNum;
+  }
+
+  static_assert((kMaxBase == 5 && guess <= 82000) || kMaxBase >= 6,
                 "Start of search is larger than solution for max base");
 
   std::cout << "Finding smallest number represented by only 0s and 1s from\n"
             << "base " << static_cast<int>(kMinBase) << " to "
-            << static_cast<int>(kMaxBase) << ", larger than "
-            << "10^" << kStartNumLog10 << std::endl;
+            << static_cast<int>(kMaxBase) << ", larger than ";
+  if (kStartNum == 0) {
+    std::cout << "10^" << kStartNumLog10;
+  }
+  else {
+    std::cout << kStartNum;
+  }
+  std::cout << std::endl;
 
   const auto kStart = GetTimeInSeconds();
-
   auto answer = BigInt{};
-  auto guess = BigInt{10};
-  guess.RaiseToPower(kStartNumLog10);
-
   auto foundAnswer = false;
+
   // Each thread will check a range of numbers from currentNumBits to
   // currentNumBits + kNumBitsToCheck, before grabbing the next available
   // range of numbers
-  auto currentNumBits = guess.SizeInBase(2);
+  auto currentNumBits = guess.SizeInBase(2) - 1;
   // check this many bits, which has log(2)/log(10) times as many digits in base
   // 10
   // We may want to explore making this proportional to the size of the current
