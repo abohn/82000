@@ -1,6 +1,7 @@
 #ifndef BigInt_hpp
 #define BigInt_hpp
 
+#include <cassert>
 #include <gmp.h>
 
 /// Wrapper around gmp's c-style integer class
@@ -66,6 +67,7 @@ class BigInt {
   /// of 2.
   /// base must satisfy 2 <= base <= 62
   size_t SizeInBase(const size_t kBase) const {
+    assert(2 <= kBase && kBase <= 62 && "Specified base was out of range");
     return mpz_sizeinbase(mNum, kBase);
   }
 
