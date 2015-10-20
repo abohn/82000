@@ -28,7 +28,8 @@ int main() {
                 "Start of search is larger than solution for max base");
 
   std::cout << "Finding smallest number represented by only 0s and 1s from\n"
-            << "base " << kMinBase << " to " << kMaxBase << ", larger than "
+            << "base " << static_cast<int>(kMinBase) << " to "
+            << static_cast<int>(kMaxBase) << ", larger than "
             << "10^" << kStartNumLog10 << std::endl;
 
   const auto kStart = GetTimeInSeconds();
